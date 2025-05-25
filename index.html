@@ -1,1 +1,1834 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FlintHub - Hostel Management</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" xintegrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" xintegrity="sha512-DTOQO9RWCH3ppGqcWaEA1BIZOC6xxalwEsw9c2QQeAIftl+Vegovlnee1c9QX4TctnWMn13TZye+giMm8e2LwA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <style>
+        body {
+            font-family: 'Inter', sans-serif; /* Using Inter font as per guidelines */
+            background-color: #f0f2f5; /* Light grey background for the app */
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+            overflow-x: hidden; /* Prevent horizontal scroll on body */
+        }
 
+        .main-content {
+            flex-grow: 1;
+        }
+
+        /* Login Page Styles */
+        #login-page {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); /* Gradient background */
+            min-height: 100vh;
+            display: flex; /* This will be set by JS when shown */
+            align-items: center;
+            justify-content: center;
+            color: white;
+            width: 100%; /* Ensure it takes full width */
+        }
+        .login-container {
+            background: rgba(255, 255, 255, 0.1); /* Frosted glass effect */
+            backdrop-filter: blur(10px);
+            padding: 40px;
+            border-radius: 15px;
+            box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
+            border: 1px solid rgba(255, 255, 255, 0.18);
+            max-width: 450px;
+            width: 90%; /* Responsive width */
+        }
+        .login-container h1 {
+            font-weight: 700;
+            color: #fff; /* White text for FlintHub */
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.2);
+        }
+        .login-container .form-control {
+            border-radius: 10px;
+            background: rgba(255, 255, 255, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            color: white;
+        }
+        .login-container .form-control::placeholder {
+            color: rgba(255, 255, 255, 0.7);
+        }
+        .login-container .btn-primary {
+            background-color: #ff6b6b; /* Catchy color for login button */
+            border-color: #ff6b6b;
+            border-radius: 10px;
+            padding: 10px 20px;
+            font-weight: 600;
+            transition: background-color 0.3s ease;
+        }
+        .login-container .btn-primary:hover {
+            background-color: #ff4757;
+            border-color: #ff4757;
+        }
+        .login-powered-by {
+            font-size: 0.9em;
+            color: rgba(255, 255, 255, 0.8);
+            margin-top: 20px;
+        }
+
+        /* Main App Styles */
+        .navbar-brand-flinthub {
+            font-weight: bold;
+            color: #343a40 !important; /* Dark color for navbar brand */
+        }
+        .sidebar {
+            height: calc(100vh - 56px); /* Full height minus navbar */
+            position: fixed;
+            top: 56px; /* Below navbar */
+            left: 0;
+            width: 250px;
+            background-color: #343a40; /* Dark sidebar */
+            padding-top: 20px;
+            transition: all 0.3s;
+            z-index: 1000;
+        }
+        .sidebar .nav-link {
+            color: #adb5bd;
+            padding: 10px 15px;
+            border-radius: 5px;
+            margin: 5px 10px;
+        }
+        .sidebar .nav-link:hover, .sidebar .nav-link.active {
+            background-color: #495057;
+            color: #fff;
+        }
+        .sidebar .nav-link .fa-fw {
+            margin-right: 8px;
+        }
+        .content-area {
+            margin-left: 250px; /* Same as sidebar width */
+            padding: 20px;
+            transition: margin-left 0.3s;
+            background-color: #ffffff; /* White content area */
+            min-height: calc(100vh - 56px - 40px); /* Full height minus navbar and footer */
+            border-radius: 8px;
+            margin-top: 10px; /* Space from navbar */
+            margin-bottom: 10px; /* Space from footer */
+        }
+        
+        .sidebar.collapsed {
+            width: 0;
+            overflow: hidden;
+        }
+        .content-area.expanded {
+            margin-left: 0;
+        }
+
+        .app-footer {
+            background-color: #e9ecef; /* Light grey footer */
+            color: #6c757d; /* Muted text color */
+            padding: 15px 0;
+            text-align: center;
+            font-size: 0.9em;
+            border-top: 1px solid #dee2e6;
+        }
+        .app-footer strong {
+            color: #495057;
+        }
+
+        .page-title {
+            color: #4a5568; 
+            margin-bottom: 1.5rem;
+            font-weight: 600;
+        }
+        .card {
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+        }
+        .card-header {
+            background-color: #667eea; 
+            color: white;
+            font-weight: 500;
+            border-top-left-radius: 10px;
+            border-top-right-radius: 10px;
+        }
+        .btn-flinthub {
+            background-color: #667eea;
+            border-color: #667eea;
+            color: white;
+        }
+        .btn-flinthub:hover {
+            background-color: #5a6fd0;
+            border-color: #5a6fd0;
+        }
+        .modal-header {
+            background-color: #667eea;
+            color: white;
+        }
+        .modal-header .btn-close {
+            filter: invert(1) grayscale(100%) brightness(200%);
+        }
+
+        #occupant-dashboard .card-header {
+             background-color: #764ba2; 
+        }
+        #occupant-dashboard .btn-flinthub, 
+        .btn-occupant-action { /* Shared style for occupant action buttons */
+            background-color: #764ba2;
+            border-color: #764ba2;
+        }
+         #occupant-dashboard .btn-flinthub:hover,
+         .btn-occupant-action:hover {
+            background-color: #653f8a;
+            border-color: #653f8a;
+        }
+
+
+        .table thead {
+            background-color: #e9ecef;
+        }
+        .table-hover tbody tr:hover {
+            background-color: #f8f9fa;
+        }
+
+        /* Initial state: login page is shown by JS, app container is hidden by d-none */
+        /* All content sections within the app are hidden by default */
+        .page-section {
+            display: none;
+        }
+        
+        @media (max-width: 768px) {
+            .sidebar {
+                width: 0; 
+            }
+            .content-area {
+                margin-left: 0; 
+            }
+            .login-container {
+                margin: 20px;
+                padding: 25px;
+                width: calc(100% - 40px); /* Adjust width for small screens */
+            }
+        }
+
+    </style>
+</head>
+<body>
+    <div id="login-page" class="page-content d-none">
+        <div class="login-container text-center">
+            <img src="https://placehold.co/100x100/667EEA/FFFFFF?text=FH" alt="FlintHub Logo" class="mb-4 rounded-circle" style="width:100px; height:100px; object-fit:cover; border: 3px solid white;">
+            <h1 class="mb-4">FlintHub</h1>
+            <form id="login-form">
+                <div class="mb-3">
+                    <input type="text" class="form-control" id="username" placeholder="Username" required>
+                </div>
+                <div class="mb-3">
+                    <input type="password" class="form-control" id="password" placeholder="Password" required>
+                </div>
+                <button type="submit" class="btn btn-primary w-100">Login</button>
+            </form>
+            <div id="login-error" class="mt-3 text-danger" style="display: none;">Invalid credentials. Please try again.</div>
+            <p class="login-powered-by mt-4">Powered by Flintup</p>
+        </div>
+    </div>
+
+    <div id="app-container" class="d-none flex-column min-vh-100">
+        <nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm sticky-top">
+            <div class="container-fluid">
+                <a class="navbar-brand navbar-brand-flinthub" href="#"><i class="fas fa-building me-2"></i>FlintHub</a>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="collapse navbar-collapse" id="navbarNav">
+                    <ul class="navbar-nav ms-auto">
+                        <li class="nav-item">
+                            <span class="nav-link" id="welcome-user">Welcome, User!</span>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="#" id="logout-button"><i class="fas fa-sign-out-alt me-1"></i>Logout</a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </nav>
+
+        <div class="d-flex flex-grow-1">
+            <nav id="app-sidebar" class="sidebar">
+                <ul class="nav flex-column" id="sidebar-menu">
+                    </ul>
+            </nav>
+
+            <main id="app-content-area" class="content-area flex-grow-1">
+                <div id="dashboard-home" class="page-section">
+                    <h2 class="page-title">Dashboard</h2>
+                    <p>Welcome to FlintHub! Select an option from the sidebar to get started.</p>
+                </div>
+
+                <div id="org-admin-manage-orgs" class="page-section">
+                    <h2 class="page-title">Manage Organizations</h2>
+                    <div class="card">
+                        <div class="card-header">Organization Details</div>
+                        <div class="card-body">
+                            <p><strong>Name:</strong> <span id="org-detail-name">Flintstones Group</span></p>
+                            </div>
+                    </div>
+                </div>
+                <div id="org-admin-manage-branches" class="page-section">
+                    <h2 class="page-title">Manage Branches</h2>
+                    <button class="btn btn-flinthub mb-3" data-bs-toggle="modal" data-bs-target="#addBranchModal"><i class="fas fa-plus-circle me-2"></i>Add New Branch</button>
+                    <div class="card">
+                        <div class="card-header">Branches List</div>
+                        <div class="card-body">
+                            <table class="table table-hover">
+                                <thead><tr><th>ID</th><th>Name</th><th>Location</th><th>Actions</th></tr></thead>
+                                <tbody id="org-branches-table-body"></tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+                <div id="org-admin-manage-floors" class="page-section">
+                    <h2 class="page-title">Manage Floors</h2>
+                     <div class="mb-3">
+                        <label for="org-floor-branch-select" class="form-label">Select Branch:</label>
+                        <select id="org-floor-branch-select" class="form-select"></select>
+                    </div>
+                    <button class="btn btn-flinthub mb-3" data-bs-toggle="modal" data-bs-target="#addFloorModal"><i class="fas fa-layer-group me-2"></i>Add New Floor</button>
+                    <div class="card">
+                        <div class="card-header">Floors List</div>
+                        <div class="card-body">
+                            <table class="table table-hover">
+                                <thead><tr><th>ID</th><th>Floor Number</th><th>Name</th><th>Branch</th><th>Actions</th></tr></thead>
+                                <tbody id="org-floors-table-body"></tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+                <div id="org-admin-manage-rooms" class="page-section">
+                    <h2 class="page-title">Manage Rooms</h2>
+                     <div class="row mb-3">
+                        <div class="col-md-6">
+                            <label for="org-room-branch-select" class="form-label">Select Branch:</label>
+                            <select id="org-room-branch-select" class="form-select"></select>
+                        </div>
+                        <div class="col-md-6">
+                            <label for="org-room-floor-select" class="form-label">Select Floor:</label>
+                            <select id="org-room-floor-select" class="form-select"></select>
+                        </div>
+                    </div>
+                    <button class="btn btn-flinthub mb-3" data-bs-toggle="modal" data-bs-target="#addRoomModal"><i class="fas fa-door-open me-2"></i>Add New Room</button>
+                    <div class="card">
+                        <div class="card-header">Rooms List</div>
+                        <div class="card-body">
+                            <table class="table table-hover">
+                                <thead><tr><th>ID</th><th>Room No.</th><th>Capacity</th><th>Type</th><th>Floor</th><th>Branch</th><th>Actions</th></tr></thead>
+                                <tbody id="org-rooms-table-body"></tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+                <div id="org-admin-register-occupant" class="page-section">
+                    <h2 class="page-title">Register New Occupant</h2>
+                    <div class="card">
+                        <div class="card-header">Occupant Details</div>
+                        <div class="card-body">
+                            <form id="org-register-occupant-form">
+                                <div class="row">
+                                    <div class="col-md-6 mb-3"><input type="text" class="form-control" placeholder="Full Name" id="org-occupant-name" required></div>
+                                    <div class="col-md-6 mb-3"><input type="email" class="form-control" placeholder="Email" id="org-occupant-email" required></div>
+                                    <div class="col-md-6 mb-3"><input type="tel" class="form-control" placeholder="Phone Number" id="org-occupant-phone"></div>
+                                    <div class="col-md-6 mb-3"><input type="text" class="form-control" placeholder="Address" id="org-occupant-address"></div>
+                                    <div class="col-md-6 mb-3">
+                                        <label for="org-occupant-branch" class="form-label">Assign to Branch:</label>
+                                        <select id="org-occupant-branch" class="form-select" required></select>
+                                    </div>
+                                </div>
+                                <button type="submit" class="btn btn-flinthub">Register Occupant</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+                <div id="org-admin-assign-bed" class="page-section">
+                    <h2 class="page-title">Assign Bed to Occupant</h2>
+                     <div class="card">
+                        <div class="card-header">Bed Assignment</div>
+                        <div class="card-body">
+                            <form id="org-assign-bed-form">
+                                <div class="row">
+                                    <div class="col-md-4 mb-3">
+                                        <label for="org-assign-occupant-select" class="form-label">Select Occupant:</label>
+                                        <select id="org-assign-occupant-select" class="form-select" required></select>
+                                    </div>
+                                    <div class="col-md-4 mb-3">
+                                        <label for="org-assign-branch-select" class="form-label">Select Branch:</label>
+                                        <select id="org-assign-branch-select" class="form-select" required></select>
+                                    </div>
+                                    <div class="col-md-4 mb-3">
+                                        <label for="org-assign-room-select" class="form-label">Select Room:</label>
+                                        <select id="org-assign-room-select" class="form-select" required></select>
+                                    </div>
+                                    <div class="col-md-4 mb-3">
+                                        <label for="org-assign-bed-select" class="form-label">Select Bed:</label>
+                                        <select id="org-assign-bed-select" class="form-select" required></select>
+                                    </div>
+                                </div>
+                                <button type="submit" class="btn btn-flinthub">Assign Bed</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+                <div id="org-admin-bed-availability" class="page-section">
+                    <h2 class="page-title">Bed Availability</h2>
+                    <div class="row mb-3">
+                        <div class="col-md-4">
+                            <label for="org-avail-branch-filter" class="form-label">Filter by Branch:</label>
+                            <select id="org-avail-branch-filter" class="form-select"><option value="">All Branches</option></select>
+                        </div>
+                         <div class="col-md-4">
+                            <label for="org-avail-room-filter" class="form-label">Filter by Room:</label>
+                            <select id="org-avail-room-filter" class="form-select"><option value="">All Rooms</option></select>
+                        </div>
+                    </div>
+                    <div class="card">
+                        <div class="card-header">Available Beds</div>
+                        <div class="card-body">
+                            <table class="table table-hover">
+                                <thead><tr><th>Bed ID</th><th>Bed No.</th><th>Room No.</th><th>Floor</th><th>Branch</th><th>Status</th></tr></thead>
+                                <tbody id="org-bed-availability-table"></tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+                <div id="org-admin-issue-invoice" class="page-section">
+                    <h2 class="page-title">Issue Invoice</h2>
+                    <div class="card">
+                        <div class="card-header">Create New Invoice</div>
+                        <div class="card-body">
+                             <form id="org-issue-invoice-form">
+                                <div class="row">
+                                    <div class="col-md-6 mb-3">
+                                        <label for="org-invoice-occupant-select" class="form-label">Select Occupant:</label>
+                                        <select id="org-invoice-occupant-select" class="form-select" required></select>
+                                    </div>
+                                    <div class="col-md-6 mb-3">
+                                        <label for="org-invoice-amount" class="form-label">Amount (USD):</label>
+                                        <input type="number" id="org-invoice-amount" class="form-control" placeholder="e.g., 500" required>
+                                    </div>
+                                    <div class="col-md-6 mb-3">
+                                        <label for="org-invoice-due-date" class="form-label">Due Date:</label>
+                                        <input type="date" id="org-invoice-due-date" class="form-control" required>
+                                    </div>
+                                    <div class="col-md-12 mb-3">
+                                        <label for="org-invoice-description" class="form-label">Description:</label>
+                                        <textarea id="org-invoice-description" class="form-control" rows="3" placeholder="e.g., Monthly Rent for April" required></textarea>
+                                    </div>
+                                </div>
+                                <button type="submit" class="btn btn-flinthub">Issue Invoice</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+                <div id="org-admin-generate-ledger" class="page-section">
+                    <h2 class="page-title">Generate Ledger</h2>
+                    <div class="row mb-3">
+                        <div class="col-md-4">
+                            <label for="org-ledger-type" class="form-label">Ledger For:</label>
+                            <select id="org-ledger-type" class="form-select">
+                                <option value="organization">Entire Organization</option>
+                                <option value="branch">Specific Branch</option>
+                                <option value="occupant">Specific Occupant</option>
+                            </select>
+                        </div>
+                        <div class="col-md-4" id="org-ledger-branch-select-div" style="display:none;">
+                            <label for="org-ledger-branch-select" class="form-label">Select Branch:</label>
+                            <select id="org-ledger-branch-select" class="form-select"></select>
+                        </div>
+                         <div class="col-md-4" id="org-ledger-occupant-select-div" style="display:none;">
+                            <label for="org-ledger-occupant-select" class="form-label">Select Occupant:</label>
+                            <select id="org-ledger-occupant-select" class="form-select"></select>
+                        </div>
+                        <div class="col-md-2 align-self-end">
+                             <button id="org-generate-ledger-btn" class="btn btn-flinthub w-100">Generate</button>
+                        </div>
+                    </div>
+                    <div class="card">
+                        <div class="card-header">Ledger Details</div>
+                        <div class="card-body">
+                            <div id="org-ledger-output">Select criteria and click Generate.</div>
+                        </div>
+                    </div>
+                </div>
+                 <div id="org-admin-view-occupants" class="page-section">
+                    <h2 class="page-title">View All Occupants</h2>
+                    <div class="card">
+                        <div class="card-header">Occupants List</div>
+                        <div class="card-body">
+                            <table class="table table-hover">
+                                <thead><tr><th>ID</th><th>Name</th><th>Email</th><th>Phone</th><th>Branch</th><th>Room</th><th>Bed</th><th>Actions</th></tr></thead>
+                                <tbody id="org-occupants-table-body"></tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+
+                <div id="branch-admin-dashboard-home" class="page-section">
+                    <h2 class="page-title">Branch Dashboard</h2>
+                    <p>Welcome, Branch Admin! Manage your branch operations from the sidebar.</p>
+                    <div class="card">
+                        <div class="card-header">Branch Overview: <span id="branch-admin-branch-name"></span></div>
+                        <div class="card-body">
+                            <p>Details about your branch will be shown here.</p>
+                            </div>
+                    </div>
+                </div>
+                 <div id="branch-admin-view-details" class="page-section">
+                    <h2 class="page-title">Branch Structure (<span id="branch-admin-details-branch-name"></span>)</h2>
+                    <nav>
+                        <div class="nav nav-tabs" id="nav-tab-branch" role="tablist">
+                            <button class="nav-link active" id="nav-branch-floors-tab" data-bs-toggle="tab" data-bs-target="#nav-branch-floors" type="button" role="tab">Floors</button>
+                            <button class="nav-link" id="nav-branch-rooms-tab" data-bs-toggle="tab" data-bs-target="#nav-branch-rooms" type="button" role="tab">Rooms</button>
+                            <button class="nav-link" id="nav-branch-beds-tab" data-bs-toggle="tab" data-bs-target="#nav-branch-beds" type="button" role="tab">Beds</button>
+                        </div>
+                    </nav>
+                    <div class="tab-content p-3 border border-top-0 rounded-bottom" id="nav-tabContent-branch">
+                        <div class="tab-pane fade show active" id="nav-branch-floors" role="tabpanel">
+                            <h5>Floors</h5>
+                            <table class="table table-sm"><thead><tr><th>ID</th><th>Floor No.</th><th>Name</th></tr></thead><tbody id="branch-admin-floors-list"></tbody></table>
+                        </div>
+                        <div class="tab-pane fade" id="nav-branch-rooms" role="tabpanel">
+                            <h5>Rooms</h5>
+                            <table class="table table-sm"><thead><tr><th>ID</th><th>Room No.</th><th>Capacity</th><th>Type</th><th>Floor</th></tr></thead><tbody id="branch-admin-rooms-list"></tbody></table>
+                        </div>
+                        <div class="tab-pane fade" id="nav-branch-beds" role="tabpanel">
+                             <h5>Beds</h5>
+                            <table class="table table-sm"><thead><tr><th>ID</th><th>Bed No.</th><th>Room No.</th><th>Status</th><th>Occupant</th></tr></thead><tbody id="branch-admin-beds-list"></tbody></table>
+                        </div>
+                    </div>
+                </div>
+                <div id="branch-admin-register-occupant" class="page-section">
+                     <h2 class="page-title">Register New Occupant (Branch: <span id="branch-reg-occupant-branch-name"></span>)</h2>
+                    <div class="card">
+                        <div class="card-header">Occupant Details</div>
+                        <div class="card-body">
+                            <form id="branch-register-occupant-form">
+                                <div class="row">
+                                    <div class="col-md-6 mb-3"><input type="text" class="form-control" placeholder="Full Name" id="branch-occupant-name" required></div>
+                                    <div class="col-md-6 mb-3"><input type="email" class="form-control" placeholder="Email" id="branch-occupant-email" required></div>
+                                    <div class="col-md-6 mb-3"><input type="tel" class="form-control" placeholder="Phone Number" id="branch-occupant-phone"></div>
+                                    <div class="col-md-6 mb-3"><input type="text" class="form-control" placeholder="Address" id="branch-occupant-address"></div>
+                                </div>
+                                <button type="submit" class="btn btn-flinthub">Register Occupant</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+                <div id="branch-admin-assign-bed" class="page-section">
+                     <h2 class="page-title">Assign Bed (Branch: <span id="branch-assign-bed-branch-name"></span>)</h2>
+                     <div class="card">
+                        <div class="card-header">Bed Assignment</div>
+                        <div class="card-body">
+                            <form id="branch-assign-bed-form">
+                                <div class="row">
+                                    <div class="col-md-4 mb-3">
+                                        <label for="branch-assign-occupant-select" class="form-label">Select Occupant (Unassigned in this branch):</label>
+                                        <select id="branch-assign-occupant-select" class="form-select" required></select>
+                                    </div>
+                                    <div class="col-md-4 mb-3">
+                                        <label for="branch-assign-room-select" class="form-label">Select Room (In this branch):</label>
+                                        <select id="branch-assign-room-select" class="form-select" required></select>
+                                    </div>
+                                    <div class="col-md-4 mb-3">
+                                        <label for="branch-assign-bed-select" class="form-label">Select Available Bed:</label>
+                                        <select id="branch-assign-bed-select" class="form-select" required></select>
+                                    </div>
+                                </div>
+                                <button type="submit" class="btn btn-flinthub">Assign Bed</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+                <div id="branch-admin-bed-availability" class="page-section">
+                    <h2 class="page-title">Bed Availability (Branch: <span id="branch-avail-bed-branch-name"></span>)</h2>
+                     <div class="row mb-3">
+                         <div class="col-md-6">
+                            <label for="branch-avail-room-filter" class="form-label">Filter by Room:</label>
+                            <select id="branch-avail-room-filter" class="form-select"><option value="">All Rooms</option></select>
+                        </div>
+                    </div>
+                    <div class="card">
+                        <div class="card-header">Available Beds</div>
+                        <div class="card-body">
+                            <table class="table table-hover">
+                                <thead><tr><th>Bed ID</th><th>Bed No.</th><th>Room No.</th><th>Floor</th><th>Status</th></tr></thead>
+                                <tbody id="branch-bed-availability-table"></tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+                <div id="branch-admin-issue-invoice" class="page-section">
+                    <h2 class="page-title">Issue Invoice (Branch: <span id="branch-issue-invoice-branch-name"></span>)</h2>
+                    <div class="card">
+                        <div class="card-header">Create New Invoice</div>
+                        <div class="card-body">
+                             <form id="branch-issue-invoice-form">
+                                <div class="row">
+                                    <div class="col-md-6 mb-3">
+                                        <label for="branch-invoice-occupant-select" class="form-label">Select Occupant (Your Branch):</label>
+                                        <select id="branch-invoice-occupant-select" class="form-select" required></select>
+                                    </div>
+                                    <div class="col-md-6 mb-3">
+                                        <label for="branch-invoice-amount" class="form-label">Amount (USD):</label>
+                                        <input type="number" id="branch-invoice-amount" class="form-control" placeholder="e.g., 500" required>
+                                    </div>
+                                    <div class="col-md-6 mb-3">
+                                        <label for="branch-invoice-due-date" class="form-label">Due Date:</label>
+                                        <input type="date" id="branch-invoice-due-date" class="form-control" required>
+                                    </div>
+                                    <div class="col-md-12 mb-3">
+                                        <label for="branch-invoice-description" class="form-label">Description:</label>
+                                        <textarea id="branch-invoice-description" class="form-control" rows="3" placeholder="e.g., Monthly Rent for April" required></textarea>
+                                    </div>
+                                </div>
+                                <button type="submit" class="btn btn-flinthub">Issue Invoice</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+                <div id="branch-admin-generate-ledger" class="page-section">
+                    <h2 class="page-title">Generate Ledger (Branch: <span id="branch-ledger-branch-name"></span>)</h2>
+                     <div class="row mb-3">
+                        <div class="col-md-4">
+                            <label for="branch-ledger-type" class="form-label">Ledger For:</label>
+                            <select id="branch-ledger-type" class="form-select">
+                                <option value="branch">This Branch</option>
+                                <option value="occupant">Specific Occupant (This Branch)</option>
+                            </select>
+                        </div>
+                        <div class="col-md-4" id="branch-ledger-occupant-select-div" style="display:none;">
+                            <label for="branch-ledger-occupant-select" class="form-label">Select Occupant:</label>
+                            <select id="branch-ledger-occupant-select" class="form-select"></select>
+                        </div>
+                        <div class="col-md-2 align-self-end">
+                             <button id="branch-generate-ledger-btn" class="btn btn-flinthub w-100">Generate</button>
+                        </div>
+                    </div>
+                    <div class="card">
+                        <div class="card-header">Ledger Details</div>
+                        <div class="card-body">
+                            <div id="branch-ledger-output">Select criteria and click Generate.</div>
+                        </div>
+                    </div>
+                </div>
+                 <div id="branch-admin-view-occupants" class="page-section">
+                    <h2 class="page-title">View Occupants (Branch: <span id="branch-view-occupants-branch-name"></span>)</h2>
+                    <div class="card">
+                        <div class="card-header">Occupants List</div>
+                        <div class="card-body">
+                            <table class="table table-hover">
+                                <thead><tr><th>ID</th><th>Name</th><th>Email</th><th>Phone</th><th>Room</th><th>Bed</th><th>Actions</th></tr></thead>
+                                <tbody id="branch-occupants-table-body"></tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="occupant-dashboard" class="page-section">
+                    <h2 class="page-title">My Dashboard</h2>
+                     <div class="row">
+                        <div class="col-md-6">
+                            <div class="card mb-4">
+                                <div class="card-header"><i class="fas fa-user-circle me-2"></i>My Profile</div>
+                                <div class="card-body">
+                                    <p><strong>Name:</strong> <span id="occupant-profile-name"></span></p>
+                                    <p><strong>Email:</strong> <span id="occupant-profile-email"></span></p>
+                                    <p><strong>Phone:</strong> <span id="occupant-profile-phone"></span></p>
+                                    <p><strong>Branch:</strong> <span id="occupant-profile-branch"></span></p>
+                                    <p><strong>Room:</strong> <span id="occupant-profile-room"></span></p>
+                                    <p><strong>Bed:</strong> <span id="occupant-profile-bed"></span></p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                             <div class="card mb-4">
+                                <div class="card-header"><i class="fas fa-file-invoice-dollar me-2"></i>Quick Actions</div>
+                                <div class="list-group list-group-flush">
+                                    <a href="#" class="list-group-item list-group-item-action" data-section="occupant-view-invoices">View My Invoices</a>
+                                    <a href="#" class="list-group-item list-group-item-action" data-section="occupant-view-payment-history">View Payment History</a>
+                                    <a href="#" class="list-group-item list-group-item-action" data-section="occupant-submit-complaint">Submit Complaint/Feedback</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div id="occupant-view-invoices" class="page-section">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <h2 class="page-title mb-0">My Invoices</h2>
+                        <button class="btn btn-sm btn-occupant-action" onclick="showSection('occupant-dashboard')"><i class="fas fa-arrow-left me-2"></i>Back to Dashboard</button>
+                    </div>
+                    <div class="card">
+                        <div class="card-header">Invoice List</div>
+                        <div class="card-body">
+                            <table class="table table-hover">
+                                <thead><tr><th>Invoice ID</th><th>Amount</th><th>Issue Date</th><th>Due Date</th><th>Status</th><th>Description</th><th>Action</th></tr></thead>
+                                <tbody id="occupant-invoices-table"></tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+                <div id="occupant-view-payment-history" class="page-section">
+                     <div class="d-flex justify-content-between align-items-center mb-3">
+                        <h2 class="page-title mb-0">My Payment History</h2>
+                        <button class="btn btn-sm btn-occupant-action" onclick="showSection('occupant-dashboard')"><i class="fas fa-arrow-left me-2"></i>Back to Dashboard</button>
+                    </div>
+                     <div class="card">
+                        <div class="card-header">Payments Made</div>
+                        <div class="card-body">
+                            <table class="table table-hover">
+                                <thead><tr><th>Payment ID</th><th>Invoice ID</th><th>Amount Paid</th><th>Payment Date</th><th>Method</th></tr></thead>
+                                <tbody id="occupant-payments-table"></tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+                <div id="occupant-submit-complaint" class="page-section">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <h2 class="page-title mb-0">Submit Complaint / Feedback</h2>
+                        <button class="btn btn-sm btn-occupant-action" onclick="showSection('occupant-dashboard')"><i class="fas fa-arrow-left me-2"></i>Back to Dashboard</button>
+                    </div>
+                    <div class="card">
+                        <div class="card-header">New Complaint/Feedback</div>
+                        <div class="card-body">
+                            <form id="occupant-complaint-form">
+                                <div class="mb-3">
+                                    <label for="complaint-subject" class="form-label">Subject:</label>
+                                    <input type="text" id="complaint-subject" class="form-control" required>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="complaint-description" class="form-label">Description:</label>
+                                    <textarea id="complaint-description" class="form-control" rows="5" required></textarea>
+                                </div>
+                                <button type="submit" class="btn btn-flinthub">Submit</button>
+                            </form>
+                        </div>
+                    </div>
+                    <div class="card mt-4">
+                        <div class="card-header">My Submitted Complaints/Feedback</div>
+                        <div class="card-body">
+                             <table class="table table-hover">
+                                <thead><tr><th>ID</th><th>Subject</th><th>Date Submitted</th><th>Status</th></tr></thead>
+                                <tbody id="occupant-complaints-history-table"></tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+            </main>
+        </div>
+
+        <footer class="app-footer mt-auto">
+            <div class="container text-center">
+                <p class="mb-0">&copy; <span id="current-year"></span> <strong>FlintHub</strong>. All rights reserved. Powered by <strong>Flintup</strong>.</p>
+            </div>
+        </footer>
+    </div>
+
+    <div class="modal fade" id="addBranchModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Add New Branch</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="add-branch-form">
+                        <div class="mb-3"><input type="text" class="form-control" id="new-branch-name" placeholder="Branch Name" required></div>
+                        <div class="mb-3"><input type="text" class="form-control" id="new-branch-location" placeholder="Location" required></div>
+                        <button type="submit" class="btn btn-flinthub">Add Branch</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="modal fade" id="addFloorModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Add New Floor</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="add-floor-form">
+                        <div class="mb-3">
+                            <label for="new-floor-branch-select" class="form-label">Branch:</label>
+                            <select id="new-floor-branch-select" class="form-select" required></select>
+                        </div>
+                        <div class="mb-3"><input type="number" class="form-control" id="new-floor-number" placeholder="Floor Number (e.g., 1, 2)" required></div>
+                        <div class="mb-3"><input type="text" class="form-control" id="new-floor-name" placeholder="Floor Name (e.g., Ground Floor, First Floor)" required></div>
+                        <button type="submit" class="btn btn-flinthub">Add Floor</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="modal fade" id="addRoomModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Add New Room</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="add-room-form">
+                        <div class="mb-3">
+                            <label for="new-room-branch-select" class="form-label">Branch:</label>
+                            <select id="new-room-branch-select" class="form-select" required></select>
+                        </div>
+                        <div class="mb-3">
+                            <label for="new-room-floor-select" class="form-label">Floor:</label>
+                            <select id="new-room-floor-select" class="form-select" required></select>
+                        </div>
+                        <div class="mb-3"><input type="text" class="form-control" id="new-room-number" placeholder="Room Number (e.g., 101, A-02)" required></div>
+                        <div class="mb-3"><input type="number" class="form-control" id="new-room-capacity" placeholder="Capacity (Number of Beds)" required min="1"></div>
+                        <div class="mb-3">
+                            <label for="new-room-type" class="form-label">Room Type:</label>
+                            <select id="new-room-type" class="form-select" required>
+                                <option value="AC">AC</option>
+                                <option value="Non-AC">Non-AC</option>
+                                <option value="Single">Single Occupancy</option>
+                                <option value="Deluxe">Deluxe</option>
+                            </select>
+                        </div>
+                        <button type="submit" class="btn btn-flinthub">Add Room</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="modal fade" id="makePaymentModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Make Payment</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <p><strong>Invoice ID:</strong> <span id="payment-invoice-id"></span></p>
+                    <p><strong>Amount Due:</strong> $<span id="payment-invoice-amount"></span></p>
+                    <form id="make-payment-form">
+                        <div class="mb-3">
+                            <label for="payment-method" class="form-label">Payment Method:</label>
+                            <select id="payment-method" class="form-select">
+                                <option value="credit_card">Credit Card (Mock)</option>
+                                <option value="paypal">PayPal (Mock)</option>
+                                <option value="bank_transfer">Bank Transfer (Mock)</option>
+                            </select>
+                        </div>
+                        <p class="text-muted small">This is a mock payment. No real transaction will occur.</p>
+                        <button type="submit" class="btn btn-flinthub">Confirm Payment</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+     <div class="modal fade" id="confirmationModal" tabindex="-1" aria-labelledby="confirmationModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="confirmationModalLabel">Confirmation</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <p id="confirmationModalMessage">Are you sure?</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-primary" id="confirmActionBtn">Confirm</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" xintegrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+    <script>
+        // --- DUMMY DATA ---
+        let db = {
+            organizations: [
+                { id: 'org1', name: 'Flintstones Group' }
+            ],
+            branches: [
+                { id: 'b1', orgId: 'org1', name: 'Downtown Hostel', location: '123 Main St' },
+                { id: 'b2', orgId: 'org1', name: 'Uptown Residence', location: '456 Oak Ave' }
+            ],
+            floors: [
+                { id: 'f1', branchId: 'b1', floorNumber: 1, name: 'Ground Floor' },
+                { id: 'f2', branchId: 'b1', floorNumber: 2, name: 'First Floor' },
+                { id: 'f3', branchId: 'b2', floorNumber: 1, name: 'Lobby Floor' }
+            ],
+            rooms: [
+                { id: 'r1', floorId: 'f1', roomNumber: '101', capacity: 4, type: 'Non-AC' },
+                { id: 'r2', floorId: 'f1', roomNumber: '102', capacity: 2, type: 'AC' },
+                { id: 'r3', floorId: 'f2', roomNumber: '201', capacity: 3, type: 'Non-AC' },
+                { id: 'r4', floorId: 'f3', roomNumber: 'L1', capacity: 1, type: 'Deluxe' }
+            ],
+            beds: [], 
+            occupants: [
+                { id: 'occ1', name: 'Peter Parker', email: 'peter@example.com', phone: '123-456-7890', address: 'Apt 1', registrationDate: '2024-01-15', assignedBedId: null, branchId: 'b1' },
+                { id: 'occ2', name: 'Mary Jane', email: 'mj@example.com', phone: '987-654-3210', address: 'Apt 2', registrationDate: '2024-02-01', assignedBedId: null, branchId: 'b2' },
+                { id: 'occ3', name: 'Harry Osborn', email: 'harry@example.com', phone: '555-555-5555', address: 'Penthouse', registrationDate: '2024-03-10', assignedBedId: null, branchId: 'b1' }
+            ],
+            invoices: [],
+            payments: [],
+            complaints: [
+                { id: 'cmp1', occupantId: 'occ1', branchId: 'b1', subject: 'Leaky Faucet', description: 'The faucet in room 101 bathroom is leaking.', dateSubmitted: '2024-05-05', status: 'open' }
+            ],
+            users: [
+                { username: 'orgadmin', password: 'password', role: 'org_admin', orgId: 'org1', name: 'Org Admin User' },
+                { username: 'branchadmin1', password: 'password', role: 'branch_admin', orgId: 'org1', branchId: 'b1', name: 'Branch Admin (Downtown)' },
+                { username: 'branchadmin2', password: 'password', role: 'branch_admin', orgId: 'org1', branchId: 'b2', name: 'Branch Admin (Uptown)' },
+                { username: 'occupant1', password: 'password', role: 'occupant', occupantId: 'occ1', name: 'Peter Parker' },
+                { username: 'occupant2', password: 'password', role: 'occupant', occupantId: 'occ2', name: 'Mary Jane' }
+            ]
+        };
+
+        function generateBeds() {
+            db.beds = []; // Clear existing beds before regenerating
+            db.rooms.forEach(room => {
+                for (let i = 1; i <= room.capacity; i++) {
+                    db.beds.push({
+                        id: `bed-${room.id}-${i}`,
+                        roomId: room.id,
+                        bedNumber: `${room.roomNumber}-B${i}`,
+                        occupantId: null,
+                        status: 'vacant' 
+                    });
+                }
+            });
+        }
+        
+        function initializeDemoData() {
+            generateBeds();
+            // Assign some beds for demo if they are not already assigned by other logic
+            const occ1 = db.occupants.find(o => o.id === 'occ1');
+            if (occ1 && !occ1.assignedBedId) {
+                const occ1Bed = db.beds.find(b => b.roomId === 'r1' && b.status === 'vacant');
+                if (occ1Bed) {
+                    occ1Bed.occupantId = 'occ1';
+                    occ1Bed.status = 'occupied';
+                    occ1.assignedBedId = occ1Bed.id;
+                }
+            }
+            const occ2 = db.occupants.find(o => o.id === 'occ2');
+            if (occ2 && !occ2.assignedBedId) {
+                const occ2Bed = db.beds.find(b => b.roomId === 'r4' && b.status === 'vacant');
+                if (occ2Bed) {
+                    occ2Bed.occupantId = 'occ2';
+                    occ2Bed.status = 'occupied';
+                    occ2.assignedBedId = occ2Bed.id;
+                }
+            }
+
+            // Generate a sample invoice for occupant1 if none exists for them
+            if (!db.invoices.some(inv => inv.occupantId === 'occ1')) {
+                const today = new Date().toISOString().split('T')[0];
+                const dueDate = new Date();
+                dueDate.setDate(dueDate.getDate() + 15);
+                const dueDateStr = dueDate.toISOString().split('T')[0];
+                db.invoices.push({
+                    id: `inv-${Date.now()}`,
+                    occupantId: 'occ1',
+                    branchId: db.occupants.find(o => o.id === 'occ1').branchId,
+                    amount: 550,
+                    issueDate: today,
+                    dueDate: dueDateStr,
+                    status: 'pending',
+                    description: 'Monthly Rent + Utilities'
+                });
+            }
+        }
+
+
+        let currentUser = null;
+        let currentConfirmationCallback = null;
+        let confirmationModalInstance = null; // Initialize later
+
+        // --- UTILITY FUNCTIONS ---
+        function showLoginPage() {
+            document.getElementById('login-page').classList.remove('d-none');
+            document.getElementById('login-page').style.display = 'flex'; // Ensure it's flex for centering
+            document.getElementById('app-container').classList.add('d-none');
+            document.getElementById('app-container').classList.remove('d-flex');
+        }
+
+        function showAppContainer() {
+            document.getElementById('login-page').classList.add('d-none');
+            document.getElementById('login-page').style.display = 'none';
+            document.getElementById('app-container').classList.remove('d-none');
+            document.getElementById('app-container').classList.add('d-flex');
+        }
+
+
+        function showSection(sectionId) {
+            document.querySelectorAll('.page-section').forEach(section => section.style.display = 'none');
+            const targetSection = document.getElementById(sectionId);
+            if(targetSection) {
+                targetSection.style.display = 'block';
+            }
+            document.querySelectorAll('#sidebar-menu .nav-link').forEach(link => {
+                link.classList.remove('active');
+                if (link.getAttribute('data-section') === sectionId) {
+                    link.classList.add('active');
+                }
+            });
+        }
+        
+        function populateSelect(selectElement, data, valueField, textField, defaultOptionText = "Select...") {
+            selectElement.innerHTML = `<option value="">${defaultOptionText}</option>`;
+            data.forEach(item => {
+                const option = document.createElement('option');
+                option.value = item[valueField];
+                option.textContent = typeof textField === 'function' ? textField(item) : item[textField];
+                selectElement.appendChild(option);
+            });
+        }
+
+        function getBranchById(branchId) { return db.branches.find(b => b.id === branchId); }
+        function getFloorById(floorId) { return db.floors.find(f => f.id === floorId); }
+        function getRoomById(roomId) { return db.rooms.find(r => r.id === roomId); }
+        function getBedById(bedId) { return db.beds.find(b => b.id === bedId); }
+        function getOccupantById(occupantId) { return db.occupants.find(o => o.id === occupantId); }
+
+
+        // --- LOGIN/LOGOUT ---
+        document.getElementById('login-form').addEventListener('submit', function(event) {
+            event.preventDefault();
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+            const user = db.users.find(u => u.username === username && u.password === password);
+
+            if (user) {
+                currentUser = user;
+                document.getElementById('login-error').style.display = 'none';
+                showAppContainer();
+                document.getElementById('welcome-user').textContent = `Welcome, ${currentUser.name}!`;
+                setupUIForRole(); 
+
+                if (currentUser.role === 'org_admin') {
+                     showSection('dashboard-home'); 
+                }
+            } else {
+                document.getElementById('login-error').style.display = 'block';
+            }
+        });
+
+        document.getElementById('logout-button').addEventListener('click', function(event) {
+            event.preventDefault();
+            currentUser = null;
+            showLoginPage();
+            document.getElementById('login-form').reset();
+            document.getElementById('sidebar-menu').innerHTML = ''; // Clear sidebar on logout
+        });
+        
+        document.getElementById('current-year').textContent = new Date().getFullYear();
+
+        // --- ROLE-BASED UI SETUP ---
+        function setupUIForRole() {
+            const sidebarMenu = document.getElementById('sidebar-menu');
+            sidebarMenu.innerHTML = ''; 
+
+            let menuItems = [];
+            if (currentUser.role === 'org_admin') {
+                menuItems = [
+                    { text: 'Dashboard', icon: 'fa-tachometer-alt', section: 'dashboard-home' },
+                    { text: 'Organizations', icon: 'fa-sitemap', section: 'org-admin-manage-orgs' },
+                    { text: 'Branches', icon: 'fa-code-branch', section: 'org-admin-manage-branches' },
+                    { text: 'Floors', icon: 'fa-layer-group', section: 'org-admin-manage-floors' },
+                    { text: 'Rooms', icon: 'fa-door-open', section: 'org-admin-manage-rooms' },
+                    { text: 'View Occupants', icon: 'fa-users', section: 'org-admin-view-occupants' },
+                    { text: 'Register Occupant', icon: 'fa-user-plus', section: 'org-admin-register-occupant' },
+                    { text: 'Assign Bed', icon: 'fa-bed', section: 'org-admin-assign-bed' },
+                    { text: 'Bed Availability', icon: 'fa-check-circle', section: 'org-admin-bed-availability' },
+                    { text: 'Issue Invoice', icon: 'fa-file-invoice-dollar', section: 'org-admin-issue-invoice' },
+                    { text: 'Generate Ledger', icon: 'fa-book', section: 'org-admin-generate-ledger' },
+                ];
+                loadOrgAdminData();
+                document.getElementById('dashboard-home').innerHTML = `<h2 class="page-title">Organization Admin Dashboard</h2><p>Manage all aspects of FlintHub from here. Use the sidebar to navigate.</p>`;
+            } else if (currentUser.role === 'branch_admin') {
+                const branchName = db.branches.find(b => b.id === currentUser.branchId)?.name || 'Your Branch';
+                menuItems = [
+                    { text: 'Dashboard', icon: 'fa-tachometer-alt', section: 'branch-admin-dashboard-home' },
+                    { text: 'Branch Details', icon: 'fa-info-circle', section: 'branch-admin-view-details' },
+                    { text: 'View Occupants', icon: 'fa-users', section: 'branch-admin-view-occupants' },
+                    { text: 'Register Occupant', icon: 'fa-user-plus', section: 'branch-admin-register-occupant' },
+                    { text: 'Assign Bed', icon: 'fa-bed', section: 'branch-admin-assign-bed' },
+                    { text: 'Bed Availability', icon: 'fa-check-circle', section: 'branch-admin-bed-availability' },
+                    { text: 'Issue Invoice', icon: 'fa-file-invoice-dollar', section: 'branch-admin-issue-invoice' },
+                    { text: 'Generate Ledger', icon: 'fa-book', section: 'branch-admin-generate-ledger' },
+                ];
+                document.getElementById('branch-admin-branch-name').textContent = branchName;
+                document.getElementById('branch-admin-details-branch-name').textContent = branchName;
+                document.getElementById('branch-reg-occupant-branch-name').textContent = branchName;
+                document.getElementById('branch-assign-bed-branch-name').textContent = branchName;
+                document.getElementById('branch-avail-bed-branch-name').textContent = branchName;
+                document.getElementById('branch-issue-invoice-branch-name').textContent = branchName;
+                document.getElementById('branch-ledger-branch-name').textContent = branchName;
+                document.getElementById('branch-view-occupants-branch-name').textContent = branchName;
+                loadBranchAdminData();
+                showSection('branch-admin-dashboard-home'); 
+            } else if (currentUser.role === 'occupant') {
+                document.getElementById('app-sidebar').style.display = 'none'; 
+                document.getElementById('app-content-area').style.marginLeft = '0';
+                 menuItems = []; // No sidebar items for occupant, navigation is on dashboard
+                loadOccupantData();
+                showSection('occupant-dashboard'); 
+            }
+
+            menuItems.forEach(item => {
+                const li = document.createElement('li');
+                li.classList.add('nav-item');
+                li.innerHTML = `<a class="nav-link" href="#" data-section="${item.section}"><i class="fas ${item.icon} fa-fw"></i>${item.text}</a>`;
+                li.querySelector('a').addEventListener('click', (e) => {
+                    e.preventDefault();
+                    showSection(item.section);
+                });
+                sidebarMenu.appendChild(li);
+            });
+            
+            if (currentUser.role === 'org_admin' || currentUser.role === 'branch_admin') {
+                document.getElementById('app-sidebar').style.display = 'block';
+                document.getElementById('app-content-area').style.marginLeft = '250px';
+            } else { // Occupant
+                 document.getElementById('app-sidebar').style.display = 'none';
+                document.getElementById('app-content-area').style.marginLeft = '0';
+            }
+        }
+        
+        // --- ORGANISATION ADMIN FUNCTIONS ---
+        function loadOrgAdminData() {
+            const org = db.organizations.find(o => o.id === currentUser.orgId);
+            if (org) document.getElementById('org-detail-name').textContent = org.name;
+            loadOrgBranches();
+            populateSelect(document.getElementById('org-floor-branch-select'), db.branches.filter(b => b.orgId === currentUser.orgId), 'id', 'name', 'All Branches');
+            populateSelect(document.getElementById('org-room-branch-select'), db.branches.filter(b => b.orgId === currentUser.orgId), 'id', 'name', 'All Branches');
+            populateSelect(document.getElementById('new-floor-branch-select'), db.branches.filter(b => b.orgId === currentUser.orgId), 'id', 'name');
+            populateSelect(document.getElementById('new-room-branch-select'), db.branches.filter(b => b.orgId === currentUser.orgId), 'id', 'name');
+            loadOrgFloors();
+            loadOrgRooms();
+            populateSelect(document.getElementById('org-occupant-branch'), db.branches.filter(b => b.orgId === currentUser.orgId), 'id', 'name', 'Select Branch');
+            populateSelect(document.getElementById('org-assign-occupant-select'), db.occupants.filter(o => !o.assignedBedId), 'id', 'name', 'Select Occupant');
+            populateSelect(document.getElementById('org-assign-branch-select'), db.branches.filter(b => b.orgId === currentUser.orgId), 'id', 'name', 'Select Branch');
+            document.getElementById('org-assign-branch-select').addEventListener('change', loadRoomsForOrgAssignBed);
+            document.getElementById('org-assign-room-select').addEventListener('change', loadBedsForOrgAssignBed);
+            populateSelect(document.getElementById('org-avail-branch-filter'), db.branches.filter(b => b.orgId === currentUser.orgId), 'id', 'name', 'All Branches');
+            document.getElementById('org-avail-branch-filter').addEventListener('change', loadOrgBedAvailability);
+            document.getElementById('org-avail-room-filter').addEventListener('change', loadOrgBedAvailability);
+            loadOrgBedAvailability(); 
+            populateSelect(document.getElementById('org-invoice-occupant-select'), db.occupants, 'id', 'name', 'Select Occupant');
+            populateSelect(document.getElementById('org-ledger-branch-select'), db.branches.filter(b => b.orgId === currentUser.orgId), 'id', 'name');
+            populateSelect(document.getElementById('org-ledger-occupant-select'), db.occupants, 'id', 'name');
+            document.getElementById('org-ledger-type').addEventListener('change', toggleOrgLedgerSelects);
+            loadAllOccupantsForOrg();
+        }
+
+        function loadOrgBranches() {
+            const tableBody = document.getElementById('org-branches-table-body');
+            tableBody.innerHTML = '';
+            db.branches.filter(b => b.orgId === currentUser.orgId).forEach(branch => {
+                const row = tableBody.insertRow();
+                row.innerHTML = `<td>${branch.id}</td><td>${branch.name}</td><td>${branch.location}</td><td><button class="btn btn-sm btn-outline-primary" onclick="editBranch('${branch.id}')"><i class="fas fa-edit"></i></button> <button class="btn btn-sm btn-outline-danger" onclick="confirmDelete('branch', '${branch.id}')"><i class="fas fa-trash"></i></button></td>`;
+            });
+        }
+        
+        document.getElementById('add-branch-form').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const name = document.getElementById('new-branch-name').value;
+            const location = document.getElementById('new-branch-location').value;
+            const newBranch = { id: 'b' + (db.branches.length + 1), orgId: currentUser.orgId, name, location };
+            db.branches.push(newBranch);
+            loadOrgBranches();
+            populateSelect(document.getElementById('org-floor-branch-select'), db.branches.filter(b => b.orgId === currentUser.orgId), 'id', 'name', 'All Branches'); 
+            bootstrap.Modal.getInstance(document.getElementById('addBranchModal')).hide();
+            this.reset();
+        });
+
+        document.getElementById('org-floor-branch-select').addEventListener('change', loadOrgFloors);
+        function loadOrgFloors() {
+            const selectedBranchId = document.getElementById('org-floor-branch-select').value;
+            const tableBody = document.getElementById('org-floors-table-body');
+            tableBody.innerHTML = '';
+            const floorsToDisplay = selectedBranchId ? db.floors.filter(f => f.branchId === selectedBranchId) : db.floors.filter(f => db.branches.find(b => b.id === f.branchId && b.orgId === currentUser.orgId));
+            floorsToDisplay.forEach(floor => {
+                const branch = getBranchById(floor.branchId);
+                const row = tableBody.insertRow();
+                row.innerHTML = `<td>${floor.id}</td><td>${floor.floorNumber}</td><td>${floor.name}</td><td>${branch.name}</td><td><button class="btn btn-sm btn-outline-primary" onclick="editFloor('${floor.id}')"><i class="fas fa-edit"></i></button> <button class="btn btn-sm btn-outline-danger" onclick="confirmDelete('floor', '${floor.id}')"><i class="fas fa-trash"></i></button></td>`;
+            });
+        }
+        
+        document.getElementById('add-floor-form').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const branchId = document.getElementById('new-floor-branch-select').value;
+            const floorNumber = document.getElementById('new-floor-number').value;
+            const name = document.getElementById('new-floor-name').value;
+            if (!branchId) { alert('Please select a branch.'); return; }
+            const newFloor = { id: 'f' + (db.floors.length + 1), branchId, floorNumber: parseInt(floorNumber), name };
+            db.floors.push(newFloor);
+            loadOrgFloors();
+            bootstrap.Modal.getInstance(document.getElementById('addFloorModal')).hide();
+            this.reset();
+        });
+
+        document.getElementById('org-room-branch-select').addEventListener('change', function() {
+            const branchId = this.value;
+            const floorSelect = document.getElementById('org-room-floor-select');
+            populateSelect(floorSelect, db.floors.filter(f => f.branchId === branchId), 'id', 'name', 'All Floors');
+            loadOrgRooms();
+        });
+        document.getElementById('org-room-floor-select').addEventListener('change', loadOrgRooms);
+
+        function loadOrgRooms() {
+            const selectedBranchId = document.getElementById('org-room-branch-select').value;
+            const selectedFloorId = document.getElementById('org-room-floor-select').value;
+            const tableBody = document.getElementById('org-rooms-table-body');
+            tableBody.innerHTML = '';
+            let roomsToDisplay = db.rooms.filter(room => {
+                const floor = getFloorById(room.floorId);
+                if (!floor) return false;
+                const branch = getBranchById(floor.branchId);
+                if (!branch || branch.orgId !== currentUser.orgId) return false;
+                if (selectedBranchId && floor.branchId !== selectedBranchId) return false;
+                if (selectedFloorId && room.floorId !== selectedFloorId) return false;
+                return true;
+            });
+            roomsToDisplay.forEach(room => {
+                const floor = getFloorById(room.floorId);
+                const branch = getBranchById(floor.branchId);
+                const row = tableBody.insertRow();
+                row.innerHTML = `<td>${room.id}</td><td>${room.roomNumber}</td><td>${room.capacity}</td><td>${room.type}</td><td>${floor.name}</td><td>${branch.name}</td><td><button class="btn btn-sm btn-outline-primary" onclick="editRoom('${room.id}')"><i class="fas fa-edit"></i></button> <button class="btn btn-sm btn-outline-danger" onclick="confirmDelete('room', '${room.id}')"><i class="fas fa-trash"></i></button></td>`;
+            });
+        }
+        
+        document.getElementById('new-room-branch-select').addEventListener('change', function() {
+            const branchId = this.value;
+            const floorSelect = document.getElementById('new-room-floor-select');
+            populateSelect(floorSelect, db.floors.filter(f => f.branchId === branchId), 'id', 'name', 'Select Floor');
+        });
+
+        document.getElementById('add-room-form').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const floorId = document.getElementById('new-room-floor-select').value;
+            const roomNumber = document.getElementById('new-room-number').value;
+            const capacity = parseInt(document.getElementById('new-room-capacity').value);
+            const type = document.getElementById('new-room-type').value;
+            if (!floorId) { alert('Please select a floor.'); return; }
+            const newRoom = { id: 'r' + (db.rooms.length + 1), floorId, roomNumber, capacity, type };
+            db.rooms.push(newRoom);
+            for (let i = 1; i <= newRoom.capacity; i++) {
+                db.beds.push({
+                    id: `bed-${newRoom.id}-${i}`,
+                    roomId: newRoom.id,
+                    bedNumber: `${newRoom.roomNumber}-B${i}`,
+                    occupantId: null,
+                    status: 'vacant'
+                });
+            }
+            loadOrgRooms();
+            loadOrgBedAvailability(); 
+            bootstrap.Modal.getInstance(document.getElementById('addRoomModal')).hide();
+            this.reset();
+        });
+        
+        document.getElementById('org-register-occupant-form').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const name = document.getElementById('org-occupant-name').value;
+            const email = document.getElementById('org-occupant-email').value;
+            const phone = document.getElementById('org-occupant-phone').value;
+            const address = document.getElementById('org-occupant-address').value;
+            const branchId = document.getElementById('org-occupant-branch').value;
+            if (!branchId) { alert('Please select a branch for the occupant.'); return; }
+            const newOccupant = {
+                id: 'occ' + (db.occupants.length + 1),
+                name, email, phone, address, branchId,
+                registrationDate: new Date().toISOString().split('T')[0],
+                assignedBedId: null
+            };
+            db.occupants.push(newOccupant);
+            db.users.push({ username: email.split('@')[0], password: 'password', role: 'occupant', occupantId: newOccupant.id, name: newOccupant.name });
+            alert(`Occupant ${name} registered successfully!`);
+            this.reset();
+            populateSelect(document.getElementById('org-assign-occupant-select'), db.occupants.filter(o => !o.assignedBedId), 'id', 'name', 'Select Occupant'); 
+            loadAllOccupantsForOrg();
+        });
+
+        function loadRoomsForOrgAssignBed() {
+            const branchId = document.getElementById('org-assign-branch-select').value;
+            const roomSelect = document.getElementById('org-assign-room-select');
+            const bedSelect = document.getElementById('org-assign-bed-select');
+            bedSelect.innerHTML = '<option value="">Select Bed</option>'; 
+            if (branchId) {
+                const roomsInBranch = db.rooms.filter(r => getFloorById(r.floorId)?.branchId === branchId);
+                populateSelect(roomSelect, roomsInBranch, 'id', 'roomNumber', 'Select Room');
+            } else {
+                roomSelect.innerHTML = '<option value="">Select Room</option>';
+            }
+        }
+        function loadBedsForOrgAssignBed() {
+            const roomId = document.getElementById('org-assign-room-select').value;
+            const bedSelect = document.getElementById('org-assign-bed-select');
+            if (roomId) {
+                const availableBeds = db.beds.filter(b => b.roomId === roomId && b.status === 'vacant');
+                populateSelect(bedSelect, availableBeds, 'id', 'bedNumber', 'Select Bed');
+            } else {
+                bedSelect.innerHTML = '<option value="">Select Bed</option>';
+            }
+        }
+        document.getElementById('org-assign-bed-form').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const occupantId = document.getElementById('org-assign-occupant-select').value;
+            const bedId = document.getElementById('org-assign-bed-select').value;
+            if (!occupantId || !bedId) { alert('Please select an occupant and a bed.'); return; }
+            const occupant = getOccupantById(occupantId);
+            const bed = getBedById(bedId);
+            if (occupant.assignedBedId) {
+                const oldBed = getBedById(occupant.assignedBedId);
+                if (oldBed) { oldBed.occupantId = null; oldBed.status = 'vacant'; }
+            }
+            occupant.assignedBedId = bedId;
+            occupant.branchId = getFloorById(getRoomById(bed.roomId).floorId).branchId; 
+            bed.occupantId = occupantId;
+            bed.status = 'occupied';
+            alert(`Bed ${bed.bedNumber} assigned to ${occupant.name}.`);
+            this.reset();
+            populateSelect(document.getElementById('org-assign-occupant-select'), db.occupants.filter(o => !o.assignedBedId), 'id', 'name', 'Select Occupant');
+            loadRoomsForOrgAssignBed(); 
+            loadOrgBedAvailability();
+            loadAllOccupantsForOrg();
+        });
+        
+        function loadOrgBedAvailability() {
+            const branchFilter = document.getElementById('org-avail-branch-filter').value;
+            const roomFilter = document.getElementById('org-avail-room-filter').value;
+            const tableBody = document.getElementById('org-bed-availability-table');
+            tableBody.innerHTML = '';
+            if (branchFilter) {
+                 const roomsInBranch = db.rooms.filter(r => getFloorById(r.floorId)?.branchId === branchFilter);
+                 populateSelect(document.getElementById('org-avail-room-filter'), roomsInBranch, 'id', 'roomNumber', 'All Rooms');
+            } else {
+                 populateSelect(document.getElementById('org-avail-room-filter'), [], 'id', 'roomNumber', 'All Rooms (Select Branch First)');
+            }
+            db.beds.forEach(bed => {
+                const room = getRoomById(bed.roomId);
+                if (!room) return;
+                const floor = getFloorById(room.floorId);
+                if (!floor) return;
+                const branch = getBranchById(floor.branchId);
+                if (!branch || branch.orgId !== currentUser.orgId) return;
+                if (branchFilter && branch.id !== branchFilter) return;
+                if (roomFilter && room.id !== roomFilter) return;
+                const row = tableBody.insertRow();
+                const statusClass = bed.status === 'vacant' ? 'text-success' : (bed.status === 'occupied' ? 'text-danger' : 'text-warning');
+                row.innerHTML = `<td>${bed.id}</td><td>${bed.bedNumber}</td><td>${room.roomNumber}</td><td>${floor.name}</td><td>${branch.name}</td><td class="${statusClass}">${bed.status.toUpperCase()}</td>`;
+            });
+        }
+
+        document.getElementById('org-issue-invoice-form').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const occupantId = document.getElementById('org-invoice-occupant-select').value;
+            const amount = parseFloat(document.getElementById('org-invoice-amount').value);
+            const dueDate = document.getElementById('org-invoice-due-date').value;
+            const description = document.getElementById('org-invoice-description').value;
+            if (!occupantId || !amount || !dueDate) { alert('Please fill all required fields.'); return; }
+            const occupant = getOccupantById(occupantId);
+            const newInvoice = {
+                id: 'inv-' + Date.now(),
+                occupantId,
+                branchId: occupant.branchId,
+                amount,
+                issueDate: new Date().toISOString().split('T')[0],
+                dueDate,
+                status: 'pending',
+                description
+            };
+            db.invoices.push(newInvoice);
+            alert(`Invoice issued to ${occupant.name} for $${amount}.`);
+            this.reset();
+        });
+
+        function toggleOrgLedgerSelects() {
+            const type = document.getElementById('org-ledger-type').value;
+            document.getElementById('org-ledger-branch-select-div').style.display = type === 'branch' ? 'block' : 'none';
+            document.getElementById('org-ledger-occupant-select-div').style.display = type === 'occupant' ? 'block' : 'none';
+        }
+        document.getElementById('org-generate-ledger-btn').addEventListener('click', function() {
+            const type = document.getElementById('org-ledger-type').value;
+            const outputDiv = document.getElementById('org-ledger-output');
+            outputDiv.innerHTML = '<h4>Ledger Report</h4>';
+            let html = '<table class="table table-sm table-bordered"><thead><tr><th>Date</th><th>Description</th><th>Occupant</th><th>Branch</th><th>Debit</th><th>Credit</th><th>Balance</th></tr></thead><tbody>';
+            let balance = 0;
+            let filteredInvoices = [];
+            let filteredPayments = [];
+            if (type === 'organization') {
+                filteredInvoices = db.invoices.filter(inv => getOccupantById(inv.occupantId)?.branchId && db.branches.find(b => b.id === getOccupantById(inv.occupantId).branchId && b.orgId === currentUser.orgId));
+                filteredPayments = db.payments.filter(p => getOccupantById(p.occupantId)?.branchId && db.branches.find(b => b.id === getOccupantById(p.occupantId).branchId && b.orgId === currentUser.orgId));
+            } else if (type === 'branch') {
+                const branchId = document.getElementById('org-ledger-branch-select').value;
+                if (!branchId) { outputDiv.innerHTML = '<p class="text-danger">Please select a branch.</p>'; return; }
+                filteredInvoices = db.invoices.filter(inv => inv.branchId === branchId);
+                filteredPayments = db.payments.filter(p => getOccupantById(p.occupantId)?.branchId === branchId);
+                 outputDiv.innerHTML = `<h4>Ledger for Branch: ${getBranchById(branchId).name}</h4>`;
+            } else if (type === 'occupant') {
+                const occupantId = document.getElementById('org-ledger-occupant-select').value;
+                if (!occupantId) { outputDiv.innerHTML = '<p class="text-danger">Please select an occupant.</p>'; return; }
+                filteredInvoices = db.invoices.filter(inv => inv.occupantId === occupantId);
+                filteredPayments = db.payments.filter(p => p.occupantId === occupantId);
+                outputDiv.innerHTML = `<h4>Ledger for Occupant: ${getOccupantById(occupantId).name}</h4>`;
+            }
+            const transactions = [];
+            filteredInvoices.forEach(inv => transactions.push({type: 'invoice', ...inv, date: inv.issueDate}));
+            filteredPayments.forEach(pay => transactions.push({type: 'payment', ...pay, date: pay.paymentDate}));
+            transactions.sort((a,b) => new Date(a.date) - new Date(b.date));
+            transactions.forEach(tx => {
+                const occupant = getOccupantById(tx.occupantId);
+                const branch = occupant ? getBranchById(occupant.branchId) : null;
+                if (tx.type === 'invoice') {
+                    balance += tx.amount;
+                    html += `<tr><td>${tx.issueDate}</td><td>Invoice: ${tx.description} (ID: ${tx.id})</td><td>${occupant?.name || 'N/A'}</td><td>${branch?.name || 'N/A'}</td><td>${tx.amount.toFixed(2)}</td><td>-</td><td>${balance.toFixed(2)}</td></tr>`;
+                } else if (tx.type === 'payment') {
+                    balance -= tx.amount;
+                    html += `<tr><td>${tx.paymentDate}</td><td>Payment Received (ID: ${tx.id}) for Invoice ${tx.invoiceId}</td><td>${occupant?.name || 'N/A'}</td><td>${branch?.name || 'N/A'}</td><td>-</td><td>${tx.amount.toFixed(2)}</td><td>${balance.toFixed(2)}</td></tr>`;
+                }
+            });
+            html += '</tbody></table>';
+            if(transactions.length === 0) html = "<p>No transactions found for this selection.</p>";
+            outputDiv.innerHTML += html;
+        });
+
+        function loadAllOccupantsForOrg() {
+            const tableBody = document.getElementById('org-occupants-table-body');
+            tableBody.innerHTML = '';
+            db.occupants.forEach(occ => {
+                const branch = getBranchById(occ.branchId);
+                let roomNumber = 'N/A', bedNumber = 'N/A';
+                if (occ.assignedBedId) {
+                    const bed = getBedById(occ.assignedBedId);
+                    if (bed) {
+                        bedNumber = bed.bedNumber;
+                        const room = getRoomById(bed.roomId);
+                        if (room) roomNumber = room.roomNumber;
+                    }
+                }
+                const row = tableBody.insertRow();
+                row.innerHTML = `
+                    <td>${occ.id}</td><td>${occ.name}</td><td>${occ.email}</td><td>${occ.phone || 'N/A'}</td>
+                    <td>${branch ? branch.name : 'N/A'}</td><td>${roomNumber}</td><td>${bedNumber}</td>
+                    <td>
+                        <button class="btn btn-sm btn-outline-primary" onclick="editOccupant('${occ.id}', 'org')"><i class="fas fa-edit"></i></button>
+                        <button class="btn btn-sm btn-outline-danger" onclick="confirmDelete('occupant', '${occ.id}')"><i class="fas fa-trash"></i></button>
+                    </td>`;
+            });
+        }
+
+        // --- BRANCH ADMIN FUNCTIONS ---
+        function loadBranchAdminData() {
+            const branchId = currentUser.branchId;
+            const branchName = db.branches.find(b => b.id === branchId)?.name || 'Your Branch';
+            document.getElementById('branch-admin-branch-name').textContent = branchName;
+            loadBranchDetailsForAdmin(branchId);
+            const unassignedOccupantsInBranch = db.occupants.filter(o => o.branchId === branchId && !o.assignedBedId);
+            populateSelect(document.getElementById('branch-assign-occupant-select'), unassignedOccupantsInBranch, 'id', 'name', 'Select Occupant');
+            const roomsInBranch = db.rooms.filter(r => getFloorById(r.floorId)?.branchId === branchId);
+            populateSelect(document.getElementById('branch-assign-room-select'), roomsInBranch, 'id', 'roomNumber', 'Select Room');
+            document.getElementById('branch-assign-room-select').addEventListener('change', loadBedsForBranchAssignBed);
+            populateSelect(document.getElementById('branch-avail-room-filter'), roomsInBranch, 'id', 'roomNumber', 'All Rooms');
+            document.getElementById('branch-avail-room-filter').addEventListener('change', () => loadBranchBedAvailability(branchId));
+            loadBranchBedAvailability(branchId);
+            const occupantsInBranch = db.occupants.filter(o => o.branchId === branchId);
+            populateSelect(document.getElementById('branch-invoice-occupant-select'), occupantsInBranch, 'id', 'name', 'Select Occupant');
+            populateSelect(document.getElementById('branch-ledger-occupant-select'), occupantsInBranch, 'id', 'name');
+            document.getElementById('branch-ledger-type').addEventListener('change', toggleBranchLedgerSelects);
+            loadOccupantsForBranchAdmin(branchId);
+        }
+        
+        function loadBranchDetailsForAdmin(branchId) {
+            const floorsList = document.getElementById('branch-admin-floors-list');
+            const roomsList = document.getElementById('branch-admin-rooms-list');
+            const bedsList = document.getElementById('branch-admin-beds-list');
+            floorsList.innerHTML = ''; roomsList.innerHTML = ''; bedsList.innerHTML = '';
+            db.floors.filter(f => f.branchId === branchId).forEach(floor => {
+                floorsList.innerHTML += `<tr><td>${floor.id}</td><td>${floor.floorNumber}</td><td>${floor.name}</td></tr>`;
+                db.rooms.filter(r => r.floorId === floor.id).forEach(room => {
+                    roomsList.innerHTML += `<tr><td>${room.id}</td><td>${room.roomNumber}</td><td>${room.capacity}</td><td>${room.type}</td><td>${floor.name}</td></tr>`;
+                    db.beds.filter(b => b.roomId === room.id).forEach(bed => {
+                        const occupant = bed.occupantId ? getOccupantById(bed.occupantId) : null;
+                        const statusClass = bed.status === 'vacant' ? 'text-success' : (bed.status === 'occupied' ? 'text-danger' : 'text-warning');
+                        bedsList.innerHTML += `<tr><td>${bed.id}</td><td>${bed.bedNumber}</td><td>${room.roomNumber}</td><td class="${statusClass}">${bed.status.toUpperCase()}</td><td>${occupant ? occupant.name : 'Vacant'}</td></tr>`;
+                    });
+                });
+            });
+        }
+
+        document.getElementById('branch-register-occupant-form').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const name = document.getElementById('branch-occupant-name').value;
+            const email = document.getElementById('branch-occupant-email').value;
+            const phone = document.getElementById('branch-occupant-phone').value;
+            const address = document.getElementById('branch-occupant-address').value;
+            const branchId = currentUser.branchId;
+            const newOccupant = {
+                id: 'occ' + (db.occupants.length + 1),
+                name, email, phone, address, branchId,
+                registrationDate: new Date().toISOString().split('T')[0],
+                assignedBedId: null
+            };
+            db.occupants.push(newOccupant);
+            db.users.push({ username: email.split('@')[0], password: 'password', role: 'occupant', occupantId: newOccupant.id, name: newOccupant.name });
+            alert(`Occupant ${name} registered successfully for your branch!`);
+            this.reset();
+            const unassignedOccupantsInBranch = db.occupants.filter(o => o.branchId === branchId && !o.assignedBedId);
+            populateSelect(document.getElementById('branch-assign-occupant-select'), unassignedOccupantsInBranch, 'id', 'name', 'Select Occupant');
+            loadOccupantsForBranchAdmin(branchId);
+        });
+        
+        function loadBedsForBranchAssignBed() {
+            const roomId = document.getElementById('branch-assign-room-select').value;
+            const bedSelect = document.getElementById('branch-assign-bed-select');
+            if (roomId) {
+                const availableBeds = db.beds.filter(b => b.roomId === roomId && b.status === 'vacant');
+                populateSelect(bedSelect, availableBeds, 'id', 'bedNumber', 'Select Bed');
+            } else {
+                bedSelect.innerHTML = '<option value="">Select Bed</option>';
+            }
+        }
+
+        document.getElementById('branch-assign-bed-form').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const occupantId = document.getElementById('branch-assign-occupant-select').value;
+            const bedId = document.getElementById('branch-assign-bed-select').value;
+            if (!occupantId || !bedId) { alert('Please select an occupant and a bed.'); return; }
+            const occupant = getOccupantById(occupantId);
+            const bed = getBedById(bedId);
+            occupant.assignedBedId = bedId;
+            bed.occupantId = occupantId;
+            bed.status = 'occupied';
+            alert(`Bed ${bed.bedNumber} assigned to ${occupant.name}.`);
+            this.reset();
+            const unassignedOccupantsInBranch = db.occupants.filter(o => o.branchId === currentUser.branchId && !o.assignedBedId);
+            populateSelect(document.getElementById('branch-assign-occupant-select'), unassignedOccupantsInBranch, 'id', 'name', 'Select Occupant');
+            document.getElementById('branch-assign-room-select').value = ''; 
+            document.getElementById('branch-assign-bed-select').innerHTML = '<option value="">Select Bed</option>'; 
+            loadBranchBedAvailability(currentUser.branchId);
+            loadOccupantsForBranchAdmin(currentUser.branchId);
+            loadBranchDetailsForAdmin(currentUser.branchId); 
+        });
+
+        function loadBranchBedAvailability(branchId) {
+            const roomFilter = document.getElementById('branch-avail-room-filter').value;
+            const tableBody = document.getElementById('branch-bed-availability-table');
+            tableBody.innerHTML = '';
+            db.beds.forEach(bed => {
+                const room = getRoomById(bed.roomId);
+                if (!room) return;
+                const floor = getFloorById(room.floorId);
+                if (!floor || floor.branchId !== branchId) return;
+                if (roomFilter && room.id !== roomFilter) return;
+                const row = tableBody.insertRow();
+                const statusClass = bed.status === 'vacant' ? 'text-success' : (bed.status === 'occupied' ? 'text-danger' : 'text-warning');
+                row.innerHTML = `<td>${bed.id}</td><td>${bed.bedNumber}</td><td>${room.roomNumber}</td><td>${floor.name}</td><td class="${statusClass}">${bed.status.toUpperCase()}</td>`;
+            });
+        }
+        
+        document.getElementById('branch-issue-invoice-form').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const occupantId = document.getElementById('branch-invoice-occupant-select').value;
+            const amount = parseFloat(document.getElementById('branch-invoice-amount').value);
+            const dueDate = document.getElementById('branch-invoice-due-date').value;
+            const description = document.getElementById('branch-invoice-description').value;
+            if (!occupantId || !amount || !dueDate) { alert('Please fill all required fields.'); return; }
+            const occupant = getOccupantById(occupantId);
+            const newInvoice = {
+                id: 'inv-' + Date.now(),
+                occupantId,
+                branchId: currentUser.branchId, 
+                amount,
+                issueDate: new Date().toISOString().split('T')[0],
+                dueDate,
+                status: 'pending',
+                description
+            };
+            db.invoices.push(newInvoice);
+            alert(`Invoice issued to ${occupant.name} for $${amount}.`);
+            this.reset();
+        });
+        
+        function toggleBranchLedgerSelects() {
+            const type = document.getElementById('branch-ledger-type').value;
+            document.getElementById('branch-ledger-occupant-select-div').style.display = type === 'occupant' ? 'block' : 'none';
+        }
+        document.getElementById('branch-generate-ledger-btn').addEventListener('click', function() {
+            const type = document.getElementById('branch-ledger-type').value;
+            const outputDiv = document.getElementById('branch-ledger-output');
+            const branchId = currentUser.branchId;
+            outputDiv.innerHTML = `<h4>Ledger Report for Branch: ${getBranchById(branchId).name}</h4>`;
+            let html = '<table class="table table-sm table-bordered"><thead><tr><th>Date</th><th>Description</th><th>Occupant</th><th>Debit</th><th>Credit</th><th>Balance</th></tr></thead><tbody>';
+            let balance = 0;
+            let filteredInvoices = [];
+            let filteredPayments = [];
+            if (type === 'branch') {
+                filteredInvoices = db.invoices.filter(inv => inv.branchId === branchId);
+                filteredPayments = db.payments.filter(p => getOccupantById(p.occupantId)?.branchId === branchId);
+            } else if (type === 'occupant') {
+                const occupantId = document.getElementById('branch-ledger-occupant-select').value;
+                if (!occupantId) { outputDiv.innerHTML = '<p class="text-danger">Please select an occupant.</p>'; return; }
+                filteredInvoices = db.invoices.filter(inv => inv.occupantId === occupantId && inv.branchId === branchId);
+                filteredPayments = db.payments.filter(p => p.occupantId === occupantId && getOccupantById(p.occupantId)?.branchId === branchId);
+                outputDiv.innerHTML = `<h4>Ledger for Occupant: ${getOccupantById(occupantId).name} (Branch: ${getBranchById(branchId).name})</h4>`;
+            }
+            const transactions = [];
+            filteredInvoices.forEach(inv => transactions.push({type: 'invoice', ...inv, date: inv.issueDate}));
+            filteredPayments.forEach(pay => transactions.push({type: 'payment', ...pay, date: pay.paymentDate}));
+            transactions.sort((a,b) => new Date(a.date) - new Date(b.date));
+            transactions.forEach(tx => {
+                const occupant = getOccupantById(tx.occupantId);
+                if (tx.type === 'invoice') {
+                    balance += tx.amount;
+                    html += `<tr><td>${tx.issueDate}</td><td>Invoice: ${tx.description} (ID: ${tx.id})</td><td>${occupant?.name || 'N/A'}</td><td>${tx.amount.toFixed(2)}</td><td>-</td><td>${balance.toFixed(2)}</td></tr>`;
+                } else if (tx.type === 'payment') {
+                    balance -= tx.amount;
+                    html += `<tr><td>${tx.paymentDate}</td><td>Payment Received (ID: ${tx.id}) for Invoice ${tx.invoiceId}</td><td>${occupant?.name || 'N/A'}</td><td>-</td><td>${tx.amount.toFixed(2)}</td><td>${balance.toFixed(2)}</td></tr>`;
+                }
+            });
+            html += '</tbody></table>';
+            if(transactions.length === 0) html = "<p>No transactions found for this selection.</p>";
+            outputDiv.innerHTML += html;
+        });
+
+        function loadOccupantsForBranchAdmin(branchId) {
+            const tableBody = document.getElementById('branch-occupants-table-body');
+            tableBody.innerHTML = '';
+            db.occupants.filter(occ => occ.branchId === branchId).forEach(occ => {
+                let roomNumber = 'N/A', bedNumber = 'N/A';
+                if (occ.assignedBedId) {
+                    const bed = getBedById(occ.assignedBedId);
+                    if (bed) {
+                        bedNumber = bed.bedNumber;
+                        const room = getRoomById(bed.roomId);
+                        if (room) roomNumber = room.roomNumber;
+                    }
+                }
+                const row = tableBody.insertRow();
+                row.innerHTML = `
+                    <td>${occ.id}</td><td>${occ.name}</td><td>${occ.email}</td><td>${occ.phone || 'N/A'}</td>
+                    <td>${roomNumber}</td><td>${bedNumber}</td>
+                    <td>
+                        <button class="btn btn-sm btn-outline-primary" onclick="editOccupant('${occ.id}', 'branch')"><i class="fas fa-edit"></i></button>
+                        <button class="btn btn-sm btn-outline-danger" onclick="confirmDelete('occupant', '${occ.id}')"><i class="fas fa-trash"></i></button>
+                    </td>`;
+            });
+        }
+
+        // --- OCCUPANT FUNCTIONS ---
+        function loadOccupantData() {
+            const occupant = db.occupants.find(o => o.id === currentUser.occupantId);
+            if (!occupant) { console.error("Occupant not found for ID:", currentUser.occupantId); return; }
+            document.getElementById('occupant-profile-name').textContent = occupant.name;
+            document.getElementById('occupant-profile-email').textContent = occupant.email;
+            document.getElementById('occupant-profile-phone').textContent = occupant.phone || 'N/A';
+            const branch = getBranchById(occupant.branchId);
+            document.getElementById('occupant-profile-branch').textContent = branch ? branch.name : 'N/A';
+            let roomNumber = 'N/A', bedNumber = 'N/A';
+            if (occupant.assignedBedId) {
+                const bed = getBedById(occupant.assignedBedId);
+                if (bed) {
+                    bedNumber = bed.bedNumber;
+                    const room = getRoomById(bed.roomId);
+                    if (room) roomNumber = room.roomNumber;
+                }
+            }
+            document.getElementById('occupant-profile-room').textContent = roomNumber;
+            document.getElementById('occupant-profile-bed').textContent = bedNumber;
+            document.querySelectorAll('#occupant-dashboard .list-group-item-action').forEach(link => {
+                link.removeEventListener('click', navigateOccupantSection); // Remove old listener if any
+                link.addEventListener('click', navigateOccupantSection);
+            });
+            loadOccupantInvoices(occupant.id);
+            loadOccupantPayments(occupant.id);
+            loadOccupantComplaints(occupant.id);
+        }
+        function navigateOccupantSection(e) {
+            e.preventDefault();
+            showSection(this.dataset.section);
+        }
+
+        function loadOccupantInvoices(occupantId) {
+            const tableBody = document.getElementById('occupant-invoices-table');
+            tableBody.innerHTML = '';
+            db.invoices.filter(inv => inv.occupantId === occupantId).forEach(invoice => {
+                const row = tableBody.insertRow();
+                const statusClass = invoice.status === 'paid' ? 'text-success' : (invoice.status === 'pending' ? 'text-warning' : 'text-danger');
+                row.innerHTML = `
+                    <td>${invoice.id}</td><td>$${invoice.amount.toFixed(2)}</td><td>${invoice.issueDate}</td><td>${invoice.dueDate}</td>
+                    <td class="${statusClass}">${invoice.status.toUpperCase()}</td><td>${invoice.description}</td>
+                    <td>${invoice.status === 'pending' ? `<button class="btn btn-sm btn-occupant-action" onclick="openPaymentModal('${invoice.id}', ${invoice.amount})">Pay Now</button>` : 'Paid'}</td>`;
+            });
+        }
+        
+        let currentInvoiceToPay = null;
+        let paymentModal = null; 
+        function openPaymentModal(invoiceId, amount) {
+            currentInvoiceToPay = invoiceId;
+            document.getElementById('payment-invoice-id').textContent = invoiceId;
+            document.getElementById('payment-invoice-amount').textContent = amount.toFixed(2);
+            if (!paymentModal) paymentModal = new bootstrap.Modal(document.getElementById('makePaymentModal'));
+            paymentModal.show();
+        }
+
+        document.getElementById('make-payment-form').addEventListener('submit', function(e) {
+            e.preventDefault();
+            if (!currentInvoiceToPay) return;
+            const invoice = db.invoices.find(inv => inv.id === currentInvoiceToPay);
+            if (invoice) {
+                invoice.status = 'paid';
+                db.payments.push({
+                    id: 'pay-' + Date.now(),
+                    invoiceId: invoice.id,
+                    occupantId: invoice.occupantId,
+                    amount: invoice.amount,
+                    paymentDate: new Date().toISOString().split('T')[0],
+                    method: document.getElementById('payment-method').value
+                });
+                alert(`Payment of $${invoice.amount} for invoice ${invoice.id} successful (mock).`);
+                loadOccupantInvoices(currentUser.occupantId);
+                loadOccupantPayments(currentUser.occupantId); 
+            }
+            if (paymentModal) paymentModal.hide();
+            currentInvoiceToPay = null;
+            this.reset();
+        });
+
+        function loadOccupantPayments(occupantId) {
+            const tableBody = document.getElementById('occupant-payments-table');
+            tableBody.innerHTML = '';
+            db.payments.filter(p => p.occupantId === occupantId).forEach(payment => {
+                const row = tableBody.insertRow();
+                row.innerHTML = `
+                    <td>${payment.id}</td><td>${payment.invoiceId}</td><td>$${payment.amount.toFixed(2)}</td>
+                    <td>${payment.paymentDate}</td><td>${payment.method}</td>`;
+            });
+        }
+        
+        document.getElementById('occupant-complaint-form').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const subject = document.getElementById('complaint-subject').value;
+            const description = document.getElementById('complaint-description').value;
+            const occupant = getOccupantById(currentUser.occupantId);
+            db.complaints.push({
+                id: 'cmp-' + Date.now(),
+                occupantId: currentUser.occupantId,
+                branchId: occupant.branchId,
+                subject, description,
+                dateSubmitted: new Date().toISOString().split('T')[0],
+                status: 'open'
+            });
+            alert('Your complaint/feedback has been submitted.');
+            loadOccupantComplaints(currentUser.occupantId);
+            this.reset();
+        });
+
+        function loadOccupantComplaints(occupantId) {
+            const tableBody = document.getElementById('occupant-complaints-history-table');
+            tableBody.innerHTML = '';
+            db.complaints.filter(c => c.occupantId === occupantId).forEach(complaint => {
+                const row = tableBody.insertRow();
+                const statusClass = complaint.status === 'resolved' ? 'text-success' : (complaint.status === 'open' ? 'text-danger' : 'text-warning');
+                row.innerHTML = `
+                    <td>${complaint.id}</td><td>${complaint.subject}</td><td>${complaint.dateSubmitted}</td>
+                    <td class="${statusClass}">${complaint.status.toUpperCase()}</td>`;
+            });
+        }
+
+        function confirmDelete(itemType, itemId) {
+            const item = getItem(itemType, itemId);
+            if (!item) return;
+            let itemName = item.name || item.roomNumber || item.bedNumber || `ID: ${itemId}`;
+            if (itemType === 'occupant') itemName = item.name;
+            document.getElementById('confirmationModalMessage').textContent = `Are you sure you want to delete ${itemType} "${itemName}"? This action cannot be undone.`;
+            currentConfirmationCallback = () => deleteItem(itemType, itemId);
+            if (!confirmationModalInstance) confirmationModalInstance = new bootstrap.Modal(document.getElementById('confirmationModal'));
+            confirmationModalInstance.show();
+        }
+        
+        document.getElementById('confirmActionBtn').addEventListener('click', function() {
+            if (currentConfirmationCallback) currentConfirmationCallback();
+            if (confirmationModalInstance) confirmationModalInstance.hide();
+            currentConfirmationCallback = null;
+        });
+
+        function getItem(itemType, itemId) {
+            switch (itemType) {
+                case 'branch': return db.branches.find(b => b.id === itemId);
+                case 'floor': return db.floors.find(f => f.id === itemId);
+                case 'room': return db.rooms.find(r => r.id === itemId);
+                case 'occupant': return db.occupants.find(o => o.id === itemId);
+                default: return null;
+            }
+        }
+
+        function deleteItem(itemType, itemId) {
+            let success = false;
+            if (itemType === 'branch') {
+                db.branches = db.branches.filter(b => b.id !== itemId);
+                const floorsInBranch = db.floors.filter(f => f.branchId === itemId).map(f => f.id);
+                db.floors = db.floors.filter(f => f.branchId !== itemId);
+                const roomsInBranch = db.rooms.filter(r => floorsInBranch.includes(r.floorId)).map(r => r.id);
+                db.rooms = db.rooms.filter(r => !floorsInBranch.includes(r.floorId));
+                db.beds = db.beds.filter(b => !roomsInBranch.includes(b.roomId));
+                db.occupants.filter(o => o.branchId === itemId).forEach(o => { o.branchId = null; o.assignedBedId = null; });
+                loadOrgBranches(); success = true;
+            } else if (itemType === 'floor') {
+                db.floors = db.floors.filter(f => f.id !== itemId);
+                const roomsInFloor = db.rooms.filter(r => r.floorId === itemId).map(r => r.id);
+                db.rooms = db.rooms.filter(r => r.floorId !== itemId);
+                db.beds = db.beds.filter(b => !roomsInFloor.includes(b.roomId));
+                loadOrgFloors(); success = true;
+            } else if (itemType === 'room') {
+                db.rooms = db.rooms.filter(r => r.id !== itemId);
+                db.beds = db.beds.filter(b => b.roomId !== itemId);
+                db.occupants.filter(o => o.assignedBedId && db.beds.find(bed => bed.id === o.assignedBedId && bed.roomId === itemId)).forEach(o => o.assignedBedId = null);
+                loadOrgRooms(); loadOrgBedAvailability(); success = true;
+            } else if (itemType === 'occupant') {
+                const occupant = db.occupants.find(o => o.id === itemId);
+                if (occupant && occupant.assignedBedId) {
+                    const bed = getBedById(occupant.assignedBedId);
+                    if (bed) { bed.status = 'vacant'; bed.occupantId = null; }
+                }
+                db.occupants = db.occupants.filter(o => o.id !== itemId);
+                db.users = db.users.filter(u => u.occupantId !== itemId); 
+                if(currentUser) { 
+                    if (currentUser.role === 'org_admin') loadAllOccupantsForOrg();
+                    if (currentUser.role === 'branch_admin') loadOccupantsForBranchAdmin(currentUser.branchId);
+                    populateSelect(document.getElementById('org-assign-occupant-select'), db.occupants.filter(o => !o.assignedBedId), 'id', 'name', 'Select Occupant');
+                    if (currentUser.role === 'branch_admin') {
+                        const unassignedOccupantsInBranch = db.occupants.filter(o => o.branchId === currentUser.branchId && !o.assignedBedId);
+                        populateSelect(document.getElementById('branch-assign-occupant-select'), unassignedOccupantsInBranch, 'id', 'name', 'Select Occupant');
+                    }
+                }
+                success = true;
+            }
+            if (success) alert(`${itemType} deleted successfully.`);
+            else alert(`Could not delete ${itemType}.`);
+        }
+        
+        function editBranch(branchId) { alert(`Edit functionality for branch ${branchId} not fully implemented in this demo.`); }
+        function editFloor(floorId) { alert(`Edit functionality for floor ${floorId} not fully implemented in this demo.`); }
+        function editRoom(roomId) { alert(`Edit functionality for room ${roomId} not fully implemented in this demo.`); }
+        function editOccupant(occupantId, context) { alert(`Edit functionality for occupant ${occupantId} (context: ${context}) not fully implemented in this demo.`); }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            initializeDemoData(); 
+            // Corrected integrity attributes
+            document.querySelectorAll('link[xintegrity]').forEach(link => link.setAttribute('integrity', link.getAttribute('xintegrity')));
+            document.querySelectorAll('script[xintegrity]').forEach(script => script.setAttribute('integrity', script.getAttribute('xintegrity')));
+
+            confirmationModalInstance = new bootstrap.Modal(document.getElementById('confirmationModal'));
+            // paymentModal instance is created when needed in openPaymentModal
+            showLoginPage(); 
+        });
+
+    </script>
+</body>
+</html>
